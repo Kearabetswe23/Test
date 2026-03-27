@@ -1,0 +1,92 @@
+{% extends 'reports/base.html' %}
+{% block title %}Report an Issue{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+    <i class="bi bi-exclamation-triangle-fill fs-3 me-3" style="color:#e8a020;"></i>
+    <div>
+        <h3 class="fw-bold mb-0">Report a Service Delivery Issue</h3>
+        <small class="text-muted">Fill in all required fields accurately to help us respond faster.</small>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Issue Title *</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Category *</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Priority</label>
+                        {{ form.priority }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description *</label>
+                    {{ form.description }}
+                    <div class="form-text">Include when the problem started and how it affects residents.</div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Location / Address *</label>
+                        {{ form.location }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Ward Number</label>
+                        {{ form.ward_number }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Photo (optional)</label>
+                    {{ form.photo }}
+                    <div class="form-text">Upload a photo of the issue to help us assess it faster.</div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary fw-semibold px-4">
+                        <i class="bi bi-send me-2"></i>Submit Report
+                    </button>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div class="col-md-4">
+        <div class="card p-3 mb-3" style="border-left: 4px solid #1a3a5c;">
+            <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Tips for a Good Report</h6>
+            <ul class="small text-muted ps-3 mb-0">
+                <li>Be specific about the location</li>
+                <li>Describe how serious the issue is</li>
+                <li>Include how long the problem has existed</li>
+                <li>Attach a photo if possible</li>
+                <li>Check your ward number on your ID or rates bill</li>
+            </ul>
+        </div>
+        <div class="card p-3" style="border-left: 4px solid #198754;">
+            <h6 class="fw-bold"><i class="bi bi-telephone me-2"></i>Emergency?</h6>
+            <p class="small text-muted mb-1">For life-threatening emergencies:</p>
+            <p class="small fw-bold mb-0">🔥 Fire: 10111</p>
+            <p class="small fw-bold mb-0">🚑 Ambulance: 10177</p>
+            <p class="small fw-bold mb-0">⚡ Eskom: 0860 037 566</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

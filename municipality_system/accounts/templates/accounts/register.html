@@ -1,0 +1,81 @@
+{% extends 'reports/base.html' %}
+{% block title %}Register – Madibeng Municipality{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="text-center mb-4">
+            <div style="font-size:2.5rem; color:#1a3a5c;"><i class="bi bi-person-plus"></i></div>
+            <h2 class="fw-bold" style="color:#1a3a5c;">Create an Account</h2>
+            <p class="text-muted">Join the MadibengService Delivery Platform</p>
+        </div>
+
+        <div class="card p-4">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">First Name *</label>
+                        <input type="text" name="first_name" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Last Name *</label>
+                        <input type="text" name="last_name" class="form-control" placeholder="Last Name" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Username *</label>
+                        <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+                        <div class="form-text">Letters, digits and @/./+/-/_ only.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Email Address *</label>
+                        <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Phone Number</label>
+                        <input type="text" name="phone_number" class="form-control" placeholder="0XX XXX XXXX">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Ward Number</label>
+                        <input type="text" name="ward_number" class="form-control" placeholder="e.g. Ward 5">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Residential Address</label>
+                        <textarea name="address" class="form-control" rows="2"
+                                  placeholder="Street Address, Suburb, City"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Password *</label>
+                        <input type="password" name="password1" class="form-control" placeholder="Choose a password" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Confirm Password *</label>
+                        <input type="password" name="password2" class="form-control" placeholder="Repeat password" required>
+                    </div>
+                </div>
+
+                {% if form.errors %}
+                <div class="alert alert-danger mt-3">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}<div>{{ error }}</div>{% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                        <i class="bi bi-person-check me-2"></i>Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center mt-3">
+            <p class="text-muted">Already have an account?
+                <a href="{% url 'accounts:login' %}" class="fw-semibold text-decoration-none">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

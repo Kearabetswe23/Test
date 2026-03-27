@@ -1,0 +1,187 @@
+{% extends 'reports/base.html' %}
+{% block title %}{{ report.reference_number }} – Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+    <a href="{% url 'reports:report_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <h4 class="fw-bold mb-0">{{ report.title }}</h4>
+        <small class="text-muted">Ref: <code>{{ report.reference_number }}</code>
+            &nbsp;|&nbsp; Submitted {{ report.created_at|date:"d M Y, H:i" }}</small>
+    </div>
+    <div class="ms-auto d-flex gap-2">
+        <span class="badge {{ report.get_status_badge_class }} fs-6">{{ report.get_status_display }}</span>
+        <span class="badge {{ report.get_priority_badge_class }} fs-6">{{ report.get_priority_display }}</span>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Left: Report Info + Chat -->
+    <div class="col-md-8">
+        <!-- Report Details -->
+        <div class="card p-4 mb-3">
+            <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size:.75rem; letter-spacing:1px;">
+                Issue Details
+            </h6>
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <small class="text-muted">Category</small>
+                    <p class="fw-semibold mb-0">{{ report.get_category_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Location</small>
+                    <p class="fw-semibold mb-0">{{ report.location }}</p>
+                </div>
+                {% if report.ward_number %}
+                <div class="col-md-6">
+                    <small class="text-muted">Ward</small>
+                    <p class="fw-semibold mb-0">{{ report.ward_number }}</p>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <small class="text-muted">Reporter</small>
+                    <p class="fw-semibold mb-0">{{ report.reporter.get_full_name|default:report.reporter.username }}</p>
+                </div>
+            </div>
+            <div class="mb-3">
+                <small class="text-muted">Description</small>
+                <p class="mt-1">{{ report.description }}</p>
+            </div>
+            {% if report.photo %}
+            <div>
+                <small class="text-muted d-block mb-1">Attached Photo</small>
+                <img src="{{ report.photo.url }}" class="img-fluid rounded" style="max-height:300px;"
+                     alt="Report photo">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Messaging -->
+        <div class="card">
+            <div class="card-header bg-white border-0 pt-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-chat-dots me-2"></i>Messages</h5>
+                <small class="text-muted">Communicate with the municipal office about this report</small>
+            </div>
+            <div class="card-body">
+                <!-- Chat Messages -->
+                <div style="max-height: 350px; overflow-y: auto;" class="mb-3" id="chatBox">
+                    {% if chat_messages %}
+                        {% for msg in chat_messages %}
+                        <div class="d-flex {% if msg.sender == request.user %}justify-content-end{% endif %} mb-3">
+                            <div class="chat-bubble p-3 rounded {% if msg.is_official_response %}chat-official{% else %}chat-resident{% endif %}">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="small">
+                                        {% if msg.is_official_response %}
+                                            <i class="bi bi-building me-1"></i>
+                                        {% else %}
+                                            <i class="bi bi-person me-1"></i>
+                                        {% endif %}
+                                        {{ msg.sender.get_full_name|default:msg.sender.username }}
+                                        {% if msg.is_official_response %}
+                                            <span class="badge bg-primary ms-1" style="font-size:.65rem;">Official</span>
+                                        {% endif %}
+                                    </strong>
+                                    <small class="text-muted ms-3">{{ msg.timestamp|date:"d M, H:i" }}</small>
+                                </div>
+                                <p class="mb-0">{{ msg.content }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-chat fs-2"></i>
+                            <p class="mt-1 small">No messages yet. Start the conversation.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Send Message Form -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        {{ msg_form.content }}
+                        <button type="submit" name="send_message" class="btn btn-primary px-4 fw-semibold">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Status + Actions -->
+    <div class="col-md-4">
+        <!-- Status Track -->
+        <div class="card p-3 mb-3">
+            <h6 class="fw-bold mb-3"><i class="bi bi-activity me-2"></i>Progress Tracking</h6>
+            {% with statuses='submitted,under_review,in_progress,resolved' %}
+            {% for s in 'submitted,under_review,in_progress,resolved'|split:',' %}
+            {% endfor %}
+            {% endwith %}
+            <div class="d-flex flex-column gap-2">
+                {% for step_status, step_label in report.STATUS_CHOICES %}
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:24px; height:24px; border-radius:50%; display:flex; align-items:center;
+                                justify-content:center; font-size:.75rem;
+                                background: {% if report.status == step_status %}#1a3a5c{% elif report.status == 'resolved' or report.status == 'closed' %}#198754{% else %}#dee2e6{% endif %};
+                                color: {% if report.status == step_status or report.status == 'resolved' %}#fff{% else %}#6c757d{% endif %};">
+                        <i class="bi bi-{% if report.status == step_status %}record-circle{% elif report.status == 'resolved' %}check{% else %}circle{% endif %}"></i>
+                    </div>
+                    <span class="small {% if report.status == step_status %}fw-bold{% else %}text-muted{% endif %}">
+                        {{ step_label }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Official Status Update -->
+        {% if is_official %}
+        <div class="card p-3 mb-3" style="border-left: 4px solid #1a3a5c;">
+            <h6 class="fw-bold mb-3"><i class="bi bi-gear me-2"></i>Update Status</h6>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold">Status</label>
+                    {{ status_form.status }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold">Priority</label>
+                    {{ status_form.priority }}
+                </div>
+                <button type="submit" name="update_status" class="btn btn-primary btn-sm w-100 fw-semibold">
+                    <i class="bi bi-check-circle me-1"></i>Update
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Report Info Card -->
+        <div class="card p-3">
+            <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Report Info</h6>
+            <div class="small">
+                <p class="mb-1 text-muted">Reference Number</p>
+                <p class="fw-bold mb-3"><code>{{ report.reference_number }}</code></p>
+                <p class="mb-1 text-muted">Submitted</p>
+                <p class="mb-3">{{ report.created_at|date:"d M Y, H:i" }}</p>
+                <p class="mb-1 text-muted">Last Updated</p>
+                <p class="mb-3">{{ report.updated_at|date:"d M Y, H:i" }}</p>
+                {% if report.resolved_at %}
+                <p class="mb-1 text-muted">Resolved</p>
+                <p class="mb-0">{{ report.resolved_at|date:"d M Y, H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-scroll chat to bottom
+    const chatBox = document.getElementById('chatBox');
+    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

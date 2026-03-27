@@ -1,0 +1,97 @@
+{% extends 'reports/base.html' %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+    <i class="bi bi-person-circle fs-3 me-3" style="color:#1a3a5c;"></i>
+    <div>
+        <h3 class="fw-bold mb-0">My Profile</h3>
+        <small class="text-muted">Update your personal information</small>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size:.8rem; letter-spacing:1px;">
+                    Account Information
+                </h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">First Name</label>
+                        <input type="text" name="first_name" class="form-control"
+                               value="{{ user.first_name }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Last Name</label>
+                        <input type="text" name="last_name" class="form-control"
+                               value="{{ user.last_name }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ user.email }}">
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size:.8rem; letter-spacing:1px;">
+                    Contact & Location
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Phone Number</label>
+                        <input type="text" name="phone_number" class="form-control"
+                               value="{{ user.profile.phone_number }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Ward Number</label>
+                        <input type="text" name="ward_number" class="form-control"
+                               value="{{ user.profile.ward_number }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Residential Address</label>
+                        <textarea name="address" class="form-control" rows="2">{{ user.profile.address }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Profile Picture</label>
+                        <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary fw-semibold">
+                        <i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            {% if user.profile.profile_picture %}
+                <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle mb-3"
+                     style="width:100px; height:100px; object-fit:cover;">
+            {% else %}
+                <div style="width:100px; height:100px; border-radius:50%; background:#1a3a5c;
+                            color:#fff; font-size:2.5rem; display:flex; align-items:center;
+                            justify-content:center; margin:0 auto 1rem;">
+                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                </div>
+            {% endif %}
+            <h5 class="fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+            <span class="badge" style="background:#1a3a5c;">
+                {{ user.profile.get_role_display }}
+            </span>
+            <hr>
+            <div class="text-start small">
+                <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ user.email }}</p>
+                <p class="mb-1"><i class="bi bi-telephone me-2"></i>{{ user.profile.phone_number|default:"Not set" }}</p>
+                <p class="mb-1"><i class="bi bi-geo-alt me-2"></i>{{ user.profile.ward_number|default:"Not set" }}</p>
+                <p class="mb-0"><i class="bi bi-calendar me-2"></i>Joined {{ user.profile.date_joined|date:"d M Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

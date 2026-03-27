@@ -1,0 +1,42 @@
+{% extends 'reports/base.html' %}
+{% block title %}Login – Madibeng Municipality{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-lg-4">
+        <div class="text-center mb-4">
+            <div style="font-size:3rem; color:#1a3a5c;"><i class="bi bi-building"></i></div>
+            <h2 class="fw-bold" style="color:#1a3a5c;">Madibeng Municipality</h2>
+            <p class="text-muted">Service Delivery Reporting System</p>
+        </div>
+
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-lock me-2"></i>Sign In</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control form-control-lg"
+                           placeholder="Enter your username" required autofocus>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control form-control-lg"
+                           placeholder="Enter your password" required>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center mt-3">
+            <p class="text-muted">Don't have an account?
+                <a href="{% url 'accounts:register' %}" class="fw-semibold text-decoration-none">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

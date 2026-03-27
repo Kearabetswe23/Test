@@ -1,0 +1,113 @@
+{% extends 'reports/base.html' %}
+{% block title %}Dashboard – Municipality System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Welcome, {{ user.first_name|default:user.username }}!</h3>
+        <small class="text-muted">Madibeng Service Delivery Portal</small>
+    </div>
+    <a href="{% url 'reports:report_create' %}" class="btn btn-primary fw-semibold">
+        <i class="bi bi-plus-circle me-2"></i>Report an Issue
+    </a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#1a3a5c;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ stats.total }}</div>
+            <small>Total Reports</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#6c757d;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ stats.submitted }}</div>
+            <small>Submitted</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#e8a020;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ stats.in_progress }}</div>
+            <small>In Progress</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#198754;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ stats.resolved }}</div>
+            <small>Resolved</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#dc3545;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ stats.urgent }}</div>
+            <small>Urgent</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="stat-card" style="background:#0d6efd;">
+            <div style="font-size:1.8rem; font-weight:700;">{{ unread_messages }}</div>
+            <small>Unread Msgs</small>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 pt-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Recent Reports</h5>
+        <a href="{% url 'reports:report_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="card-body p-0">
+        {% if recent_reports %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Reference</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in recent_reports %}
+                    <tr>
+                        <td><code>{{ report.reference_number }}</code></td>
+                        <td>{{ report.title|truncatechars:40 }}</td>
+                        <td>{{ report.get_category_display }}</td>
+                        <td>
+                            <span class="badge {{ report.get_status_badge_class }}">
+                                {{ report.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {{ report.get_priority_badge_class }}">
+                                {{ report.get_priority_display }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ report.created_at|date:"d M Y" }}</td>
+                        <td>
+                            <a href="{% url 'reports:report_detail' report.pk %}"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-2">No reports yet.</p>
+            <a href="{% url 'reports:report_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus me-1"></i>Submit Your First Report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
