@@ -3,14 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django. utils import timezone
 
 from .models import IssueReport, Message, Notification
 from .forms import IssueReportForm, MessageForm, StatusUpdateForm, ReportFilterForm
 
 
 def create_notification(user, title, message_text, report=None):
-    """Helper to create a notification for a user."""
+    "Helper to create a notification for a user."""
     Notification.objects.create(
         user=user,
         title=title,
@@ -108,7 +108,7 @@ def report_create(request):
             report = form.save(commit=False)
             report.reporter = request.user
             # Auto-fill ward from profile if not provided
-            if not report.ward_number:
+            If not, report.ward_number:
                 try:
                     report.ward_number = request.user.profile.ward_number
                 except Exception:
@@ -116,7 +116,7 @@ def report_create(request):
             report.save()
 
             messages.success(request,
-                f'✅ Report submitted! Your reference number is {report.reference_number}.')
+                f' Report submitted! Your reference number is {report.reference_number}.')
             return redirect('reports:report_detail', pk=report.pk)
         else:
             messages.error(request, 'Please correct the errors below.')
@@ -134,7 +134,7 @@ def report_create(request):
 
 @login_required
 def report_detail(request, pk):
-    """View a report's details and its messages."""
+    "View a report's details and its messages."""
     report = get_object_or_404(IssueReport, pk=pk)
     user = request.user
 
@@ -143,8 +143,8 @@ def report_detail(request, pk):
     except Exception:
         is_official = False
 
-    # Only reporter or officials can view
-    if report.reporter != user and not is_official:
+    
+    the report.reporter != user and not is_official:
         messages.error(request, 'You do not have permission to view this report.')
         return redirect('reports:report_list')
 
@@ -192,13 +192,13 @@ def report_detail(request, pk):
             updated = status_form.save()
             # Notify reporter
             create_notification(
-                report.reporter,
+                report. reporter,
                 f'Status update: {report.reference_number}',
                 f'Your report "{report.title}" status changed from '
                 f'{old_status} to {updated.status}.',
                 report
             )
-            messages.success(request, '✅ Report status updated.')
+            messages.success(request, ' Report status updated.')
             return redirect('reports:report_detail', pk=pk)
 
     chat_messages = report.messages.all()
@@ -214,7 +214,7 @@ def report_detail(request, pk):
 
 @login_required
 def notifications_view(request):
-    """View all notifications for the logged-in user."""
+    "View all notifications for the logged-in user."""
     notifs = Notification.objects.filter(user=request.user)
     # Mark all as read when page is opened
     notifs.update(is_read=True)
@@ -223,7 +223,7 @@ def notifications_view(request):
 
 @login_required
 def messages_inbox(request):
-    """Inbox: show all reports the user has messages on."""
+    """ Inbox: show all reports the user has messages on."""
     user = request.user
     try:
         is_official = user.profile.is_official()
