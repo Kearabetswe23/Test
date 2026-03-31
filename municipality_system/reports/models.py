@@ -4,17 +4,17 @@ from django.utils import timezone
 
 
 class IssueReport(models.Model):
-    """A service delivery issue reported by a resident."""
+    "A service delivery issue reported by a resident."""
 
     CATEGORY_CHOICES = [
-        ('water', '💧 Water (Leaks / No Water)'),
-        ('electricity', '⚡ Electricity (Outage / Fault)'),
-        ('roads', '🚧 Roads (Potholes / Damage)'),
-        ('waste', '🗑️ Waste Collection'),
-        ('sewage', '🚽 Sewage / Drainage'),
-        ('parks', '🌳 Parks & Public Spaces'),
-        ('street_lights', '💡 Street Lights'),
-        ('other', '📋 Other'),
+        ('water', ' Water (Leaks / No Water)'),
+        ('electricity', ' Electricity (Outage / Fault)'),
+        ('roads', ' Roads (Potholes / Damage)'),
+        ('waste', ' Waste Collection'),
+        ('sewage', ' Sewage / Drainage'),
+        ('parks', ' Parks & Public Spaces'),
+        ('street_lights', ' Street Lights'),
+        ('other', ' Other'),
     ]
 
     STATUS_CHOICES = [
@@ -109,7 +109,7 @@ class Message(models.Model):
 
 
 class Notification(models.Model):
-    """System notifications for users."""
+    "System notifications for users."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)
     message = models.TextField()
